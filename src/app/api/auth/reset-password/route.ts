@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { ensureAuthSchema } from "@/lib/db-init";
 import { prisma } from "@/lib/prisma";
 
 const resetPasswordSchema = z.object({
@@ -11,6 +12,7 @@ const resetPasswordSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    await ensureAuthSchema(prisma);
     const body = await request.json();
     const parsed = resetPasswordSchema.safeParse(body);
 

@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 
 import SignOutButton from "@/components/SignOutButton";
 import { AUTH_COOKIE_NAME, verifyAuthToken } from "@/lib/auth";
+import { ensureAuthSchema } from "@/lib/db-init";
 import { prisma } from "@/lib/prisma";
 
 export default async function DashboardPage() {
+  await ensureAuthSchema(prisma);
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 

@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { ensureAuthSchema } from "@/lib/db-init";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
+    await ensureAuthSchema(prisma);
     const url = new URL(request.url);
     const token = url.searchParams.get("token");
 

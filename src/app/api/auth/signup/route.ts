@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { ensureAuthSchema } from "@/lib/db-init";
 import { sendVerificationEmail } from "@/lib/mailer";
 import { prisma } from "@/lib/prisma";
 
@@ -13,6 +14,7 @@ const signUpSchema = z.object({
 export async function POST(request: Request) {
   try {
     const appUrl = new URL(request.url).origin;
+    await ensureAuthSchema(prisma);
     const body = await request.json();
     const parsed = signUpSchema.safeParse(body);
 

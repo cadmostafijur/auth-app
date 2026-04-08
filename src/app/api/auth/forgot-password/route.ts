@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { ensureAuthSchema } from "@/lib/db-init";
 import { sendPasswordResetEmail } from "@/lib/mailer";
 import { prisma } from "@/lib/prisma";
 
@@ -13,6 +14,7 @@ const genericMessage = "If an account exists, a password reset link has been sen
 export async function POST(request: Request) {
   try {
     const appUrl = new URL(request.url).origin;
+    await ensureAuthSchema(prisma);
     const body = await request.json();
     const parsed = forgotPasswordSchema.safeParse(body);
 

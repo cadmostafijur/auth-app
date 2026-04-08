@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { AUTH_COOKIE_NAME, authCookieOptions, createAuthToken } from "@/lib/auth";
+import { ensureAuthSchema } from "@/lib/db-init";
 import { prisma } from "@/lib/prisma";
 
 const loginSchema = z.object({
@@ -12,6 +13,7 @@ const loginSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    await ensureAuthSchema(prisma);
     const body = await request.json();
     const parsed = loginSchema.safeParse(body);
 
