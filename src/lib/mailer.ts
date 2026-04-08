@@ -10,9 +10,13 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
-export async function sendVerificationEmail(to: string, token: string) {
+type MailOptions = {
+  appUrl?: string;
+};
+
+export async function sendVerificationEmail(to: string, token: string, options?: MailOptions) {
   const from = process.env.RESEND_FROM_EMAIL;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = options?.appUrl || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   if (!from) {
     throw new Error("Missing RESEND_FROM_EMAIL environment variable");
@@ -42,9 +46,9 @@ export async function sendVerificationEmail(to: string, token: string) {
   });
 }
 
-export async function sendPasswordResetEmail(to: string, token: string) {
+export async function sendPasswordResetEmail(to: string, token: string, options?: MailOptions) {
   const from = process.env.RESEND_FROM_EMAIL;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = options?.appUrl || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   if (!from) {
     throw new Error("Missing RESEND_FROM_EMAIL environment variable");

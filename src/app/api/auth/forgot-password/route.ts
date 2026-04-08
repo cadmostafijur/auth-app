@@ -12,6 +12,7 @@ const genericMessage = "If an account exists, a password reset link has been sen
 
 export async function POST(request: Request) {
   try {
+    const appUrl = new URL(request.url).origin;
     const body = await request.json();
     const parsed = forgotPasswordSchema.safeParse(body);
 
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
       },
     });
 
-    await sendPasswordResetEmail(user.email, token);
+    await sendPasswordResetEmail(user.email, token, { appUrl });
 
     return NextResponse.json({ message: genericMessage });
   } catch (error) {

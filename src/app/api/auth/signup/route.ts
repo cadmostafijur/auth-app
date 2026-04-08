@@ -12,6 +12,7 @@ const signUpSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const appUrl = new URL(request.url).origin;
     const body = await request.json();
     const parsed = signUpSchema.safeParse(body);
 
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
       },
     });
 
-    await sendVerificationEmail(email, token);
+    await sendVerificationEmail(email, token, { appUrl });
 
     return NextResponse.json({
       message: "Account created. Check your email to verify your account.",

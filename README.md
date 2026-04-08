@@ -56,3 +56,20 @@ Open `http://localhost:3000`.
 - Verification links expire after 24 hours.
 
 For production, make sure secure env vars are set in your hosting platform.
+
+## Production Deploy Checklist
+
+1. Set env vars in hosting:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+
+2. Apply schema to Neon production DB:
+
+```bash
+npm run db:push
+```
+
+3. Ensure Prisma client generation runs during install:
+- `postinstall` already runs `prisma generate`.
