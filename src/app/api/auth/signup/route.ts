@@ -55,7 +55,17 @@ export async function POST(request: Request) {
       },
     });
 
-    await sendVerificationEmail(email, token, { appUrl });
+    try {
+      await sendVerificationEmail(email, token, { appUrl });
+    } catch (mailError) {
+      await prisma.verificationToken.deleteMany({ where: { userId: user.id } });
+      await prisma.user.delete({ where: { id: user.id } });
+      console.error("Signup mail error:", mailError);
+      return NextResponse.json(
+        { message: "Unable to send verification email. Please try again." },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json({
       message: "Account created. Check your email to verify your account.",

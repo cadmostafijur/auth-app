@@ -64,12 +64,15 @@ For production, make sure secure env vars are set in your hosting platform.
 - `JWT_SECRET`
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
+- `NEXT_PUBLIC_APP_URL` (must be your deployed domain, not localhost)
 
 2. Apply schema to Neon production DB:
 
 ```bash
 npm run db:push
 ```
+
+For Vercel, build also runs schema push via `vercel-build`.
 
 3. Ensure Prisma client generation runs during install:
 - `postinstall` already runs `prisma generate`.

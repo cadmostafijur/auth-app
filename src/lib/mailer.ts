@@ -14,9 +14,23 @@ type MailOptions = {
   appUrl?: string;
 };
 
+function resolveAppUrl(appUrl?: string) {
+  const candidate =
+    appUrl ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ||
+    "http://localhost:3000";
+
+  if (process.env.NODE_ENV === "production" && candidate.includes("localhost")) {
+    throw new Error("Refusing to send production email with localhost URL");
+  }
+
+  return candidate;
+}
+
 export async function sendVerificationEmail(to: string, token: string, options?: MailOptions) {
   const from = process.env.RESEND_FROM_EMAIL;
-  const appUrl = options?.appUrl || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = resolveAppUrl(options?.appUrl);
 
   if (!from) {
     throw new Error("Missing RESEND_FROM_EMAIL environment variable");
@@ -48,7 +62,7 @@ export async function sendVerificationEmail(to: string, token: string, options?:
 
 export async function sendPasswordResetEmail(to: string, token: string, options?: MailOptions) {
   const from = process.env.RESEND_FROM_EMAIL;
-  const appUrl = options?.appUrl || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = resolveAppUrl(options?.appUrl);
 
   if (!from) {
     throw new Error("Missing RESEND_FROM_EMAIL environment variable");
