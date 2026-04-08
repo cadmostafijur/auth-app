@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Simple Auth App (Neon + Resend)
 
-## Getting Started
+This project includes:
 
-First, run the development server:
+- Sign up
+- Email verification via Resend
+- Login with JWT cookie session
+- Forgot/reset password via email
+- Protected dashboard
+- Prisma ORM with Neon Postgres
+
+## 1) Configure Environment
+
+Copy `.env.example` values into `.env` and set real credentials:
+
+- `DATABASE_URL` -> your Neon connection string
+- `RESEND_API_KEY` -> your Resend API key
+- `RESEND_FROM_EMAIL` -> verified sender in Resend
+- `JWT_SECRET` -> a long random secret
+- `NEXT_PUBLIC_APP_URL` -> app base URL (local: `http://localhost:3000`)
+
+## 2) Install and Generate Prisma Client
+
+```bash
+npm install
+npx prisma generate
+```
+
+## 3) Create Database Tables
+
+```bash
+npx prisma migrate dev --name init_auth
+```
+
+## 4) Run the App
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Main Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/signup`
+- `/login`
+- `/forgot-password`
+- `/reset-password?token=...`
+- `/dashboard`
+- `/api/auth/verify-email?token=...`
 
-## Learn More
+## Notes
 
-To learn more about Next.js, take a look at the following resources:
+- `dashboard` requires a valid auth cookie from login.
+- Login is blocked until email is verified.
+- Verification links expire after 24 hours.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For production, make sure secure env vars are set in your hosting platform.
