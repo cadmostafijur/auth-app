@@ -38,7 +38,7 @@ export async function sendVerificationEmail(to: string, token: string, options?:
 
   const verifyUrl = `${appUrl}/api/auth/verify-email?token=${token}`;
 
-  await getResendClient().emails.send({
+  const result = await getResendClient().emails.send({
     from,
     to,
     subject: "Verify your email",
@@ -58,6 +58,10 @@ export async function sendVerificationEmail(to: string, token: string, options?:
       </div>
     `,
   });
+
+  if (result.error) {
+    throw new Error(`Verification email failed: ${result.error.message}`);
+  }
 }
 
 export async function sendPasswordResetEmail(to: string, token: string, options?: MailOptions) {
@@ -70,7 +74,7 @@ export async function sendPasswordResetEmail(to: string, token: string, options?
 
   const resetUrl = `${appUrl}/reset-password?token=${token}`;
 
-  await getResendClient().emails.send({
+  const result = await getResendClient().emails.send({
     from,
     to,
     subject: "Reset your password",
@@ -90,4 +94,8 @@ export async function sendPasswordResetEmail(to: string, token: string, options?
       </div>
     `,
   });
+
+  if (result.error) {
+    throw new Error(`Password reset email failed: ${result.error.message}`);
+  }
 }

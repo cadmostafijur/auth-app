@@ -29,10 +29,39 @@ export async function POST(request: Request) {
     const existing = await prisma.user.findUnique({ where: { email } });
 
     if (existing) {
-      return NextResponse.json(
-        { message: "Account already exists. Please log in." },
-        { status: 409 },
-      );
+      if (existing.isVerified) {
+        return NextResponse.json(
+          { message: "Account already exists. Please log in." },
+          { status: 409 },
+        );
+      }
+
+      await prisma.verificationToken.deleteMany({ where: { userId: existing.id } });
+
+      const retryToken = crypto.randomUUID();
+      const retryExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+
+      await prisma.verificationToken.create({
+        data: {
+          token: retryToken,
+          userId: existing.id,
+          expiresAt: retryExpiresAt,
+        },
+      });
+
+      try {
+        await sendVerificationEmail(email, retryToken, { appUrl });
+      } catch (mailError) {
+        console.error("Signup resend mail error:", mailError);
+        return NextResponse.json(
+          { message: "Unable to send verification email. Please try again." },
+          { status: 500 },
+        );
+      }
+
+      return NextResponse.json({
+        message: "Account exists but is not verified. We sent a new verification email.",
+      });
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
